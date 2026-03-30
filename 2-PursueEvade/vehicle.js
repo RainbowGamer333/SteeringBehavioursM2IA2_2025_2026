@@ -56,7 +56,7 @@ class Vehicle {
     // 2 - prediction dans 10 frames = 10 fois la longueur du vecteur
     // (on multiplie le vecteur vitesse par 10)
     // TODO
-    targetAhead.mult(20);
+    targetAhead.mult(10);
 
     // 3 - on positionne  la target au bout de ce vecteur
     // (on ajoute ce vecteur à la position de la target)
