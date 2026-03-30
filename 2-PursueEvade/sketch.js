@@ -5,7 +5,7 @@ let sliderVitesseMaxCible;
 function createTargets(nb) {
   let targets = [];
   for (let i = 0; i < nb; i++) {
-    target = new Target(random(width), random(height));
+    target = new BouncingBall(random(width), random(height));
     target.maxSpeed = 3;
     target.maxForce = 1;
     targets.push(target);
@@ -13,17 +13,25 @@ function createTargets(nb) {
   return targets;
 }
 
+function createPursuers(nb) {
+  let pursuers = [];
+  for (let i = 0; i < nb; i++) {
+    pursuer = new Vehicle(random(width), random(height));
+    pursuer.maxSpeed = 4;
+    pursuer.maxForce = 0.1;
+    pursuers.push(pursuer);
+  }
+  return pursuers;
+}
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
   // Poursuiveur
-  pursuer = new Vehicle(random(width), random(height));
-  //pursuer.maxSpeed = 10;
-  //pursuer.maxForce = 0.4;
-  //pursuer.vel = createVector(2, 4)
+  pursuers = createPursuers(1);
 
   // Cible
-  targets = createTargets(3);
+  targets = createTargets(1);
 
   // Slider pour la vitesse max de la cible
   sliderVitesseMaxCible = createSlider(1, 10, 3, 0.1);
@@ -57,12 +65,34 @@ function draw() {
   let maxSpeedPoursuiveur = sliderVitesseMaxPoursuiveur.value();
   let maxForcePoursuiveur = sliderForceMaxPoursuiveur.value();
 
-  pursuer.maxSpeed = maxSpeedPoursuiveur;
-  pursuer.maxForce = maxForcePoursuiveur;
-  targets.forEach(target => {
+  for (let target of targets) {
     target.maxSpeed = maxSpeedCible;
     target.maxForce = maxForceCible;
-  });
+    pursuer = cibleLaPlusProche(target, pursuers);
+
+    if (pursuer.pos.dist(target.pos) < target.rayonDetection) {
+      // si le poursuiveur est à moins de rayonDetection de la target, la target s'évade du poursuiveur
+      target.applyForce(target.evade(pursuer));
+    } else {
+      // sinon la target se déplace normalement
+      target.applyForce(target.vel);
+    }
+    target.update();
+    target.show();
+  }
+
+  for (let pursuer of pursuers) {
+    pursuer.maxSpeed = maxSpeedPoursuiveur;
+    pursuer.maxForce = maxForcePoursuiveur;
+
+    // pursuer = le véhicule poursuiveur, il vise un point devant la cible
+    target = cibleLaPlusProche(pursuer, targets);
+    pursuer.applyForce(pursuer.pursue(target));
+    pursuer.update();
+    pursuer.show();
+  }
+
+  
 
   // Affiche les valeurs des sliders à l'écran
   noStroke();
@@ -72,33 +102,6 @@ function draw() {
   text(`Force max cible : ${maxForceCible.toFixed(2)}`, 220, 65);
   text(`Vitesse max poursuiveur : ${maxSpeedPoursuiveur.toFixed(1)}`, 220, 95);
   text(`Force max poursuiveur : ${maxForcePoursuiveur.toFixed(2)}`, 220, 125);
-
-  // pursuer = le véhicule poursuiveur, il vise un point devant la cible
-  target = cibleLaPlusProche(pursuer, targets);
-
-  //let force = pursuer.pursuePerfect(target);
-  let force = pursuer.pursue(target);
-  pursuer.applyForce(force);
-
-  // déplacement et dessin du véhicule et de la target
-  pursuer.update();
-  pursuer.show();
-
-  // on déplace et on dessine toutes les targets
-  targets.forEach(target => {
-    // lorsque la target atteint un bord du canvas elle ré-apparait de l'autre côté
-    target.edges();
-
-    // TODO : si le poursuiveur est à moins de target.rayonDetection
-    // alors la target s'évade (evade = fuite avec prédiction) du
-    // poursuiveur
-
-    // mettre en commentaire la ligne suivante
-    // si cible controlée à la souris
-    target.applyForce(target.evade(pursuer));
-    target.update();
-    target.show();
-  });
 }
 
 function cibleLaPlusProche(vehicle, targets) {
