@@ -6,11 +6,7 @@ function creerVehicules(nb) {
   for (let i = 0; i < nb; i++) {
     let x = random(width);
     let y = random(height);
-    if (random() < 0.5) {
-      vehicles.push(new SeekingVehicle(x, y));
-    } else {
-      vehicles.push(new FleeingVehicle(x, y));
-    } 
+    vehicles.push(new SeekingVehicle(x, y));
   }
   return vehicles;
 }
@@ -51,9 +47,9 @@ function draw() {
   // Récupère les valeurs des sliders et les applique aux véhicules
   let maxSpeed = maxSpeedSlider.value();
   let maxForce = maxForceSlider.value();
-  for (let i = 0; i < vehicles.length; i++) {
-    vehicles[i].maxSpeed = maxSpeed;
-    vehicles[i].maxForce = maxForce;
+  for (let vehicle of vehicles) {
+    vehicle.maxSpeed = maxSpeed;
+    vehicle.maxForce = maxForce;
   }
 
   // Affiche les valeurs des sliders à l'écran
@@ -80,11 +76,16 @@ function draw() {
   circle(target.x, target.y, 32);
 
   // je déplace et dessine les véhicules
-  for (let i = 0; i < vehicles.length; i++) {
-    vehicles[i].applyBehaviors(target);
-    vehicles[i].edges()
-    vehicles[i].update();
-    vehicles[i].show();
-  }
+  for (let vehicle of vehicles) {
+    vehicle.applyBehaviors(target);
+    vehicle.edges();
+    vehicle.update();
+    vehicle.show();
 
+    if (vehicle.pos.dist(target) < 20) {
+      // Si le véhicule est proche de la cible, on le téléporte à une position aléatoire
+      vehicle.pos = createVector(random(width), random(height));
+      vehicle.vel = createVector(0, 0);
+    }
+  }
 }
