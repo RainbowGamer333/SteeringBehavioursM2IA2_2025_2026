@@ -139,3 +139,25 @@ class Vehicle {
     }
   }
 }
+
+class SeekingVehicle extends Vehicle {
+  constructor(x, y) {
+    super(x, y);
+  }
+
+  applyBehaviors(target) {
+    let force = this.seek(target);
+    this.applyForce(force);
+  }
+}
+
+class FleeingVehicle extends Vehicle {
+  constructor(x, y) {
+    super(x, y);
+  }
+
+  applyBehaviors(target) {
+    let force = this.flee(target);
+    this.applyForce(force);
+  }
+}

@@ -6,7 +6,11 @@ function creerVehicules(nb) {
   for (let i = 0; i < nb; i++) {
     let x = random(width);
     let y = random(height);
-    vehicles.push(new Vehicle(x, y));
+    if (random() < 0.5) {
+      vehicles.push(new SeekingVehicle(x, y));
+    } else {
+      vehicles.push(new FleeingVehicle(x, y));
+    } 
   }
   return vehicles;
 }
