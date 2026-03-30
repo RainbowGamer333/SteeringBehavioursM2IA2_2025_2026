@@ -15,12 +15,13 @@ function setup() {
   target = createVector(random(width), random(height));
 
   // on cree des vehicules, autant que de points
-  creerVehicules(1);
+  creerVehicules(4);
 }
 
 function creerVehicules(n) {
   for (let i = 0; i < n; i++) {
     let v = new Vehicle(random(width), random(height));
+    v.maxSpeed = 4;
     vehicles.push(v);
   }
 }
@@ -46,15 +47,18 @@ function draw() {
   // si on a affaire au premier véhicule
   // alors il suit la souris (target)
   let steeringForce;
-  // le premier véhicule suit la souris avec arrivée
-  vehicles.forEach((vehicle, index) => {
-  
-    // le premier véhicule suit la souris avec arrivée
-    steeringForce = vehicle.arrive(target, 0);
-       vehicle.applyForce(steeringForce);
-       vehicle.update();
-      vehicle.show();
-    })
+  for (let i = 0; i < vehicles.length; i++) {
+    if (i === 0) {
+      // le premier véhicule suit la souris avec arrivée
+       steeringForce = vehicles[i].arrive(target, 0);
+    } else {
+      // les autres véhicules suivent le premier véhicule avec arrivée
+      steeringForce = vehicles[i].arrive(vehicles[i - 1].pos, 0);
+    }
+    vehicles[i].applyForce(steeringForce);
+    vehicles[i].update();
+    vehicles[i].show();
+  }
 
 }
 
