@@ -33,9 +33,8 @@ function setup() {
   // ajouter nb vehicules au tableau dans une boucle
   // avec une position random dans le canvas
 
-  // La cible est un vecteur avec une position aléatoire dans le canvas
-  // dirigée par la souris ensuite dans draw()
-  target = createVector(random(width), random(height));
+  // La cible est un objet Target initialisé aléatoirement dans le canvas
+  target = new Target(random(width), random(height));
 }
 
 // la fonction draw est appelée en boucle par p5.js, 60 fois par seconde par défaut
@@ -64,25 +63,19 @@ function draw() {
   // pas de contours pour les formes.
   noStroke();
 
-  // mouseX et mouseY sont des variables globales de p5.js, elles correspondent à la position de la souris
-  // on les stocke dans un vecteur pour pouvoir les utiliser avec la méthode seek (un peu plus loin)
-  // du vehicule
-  target.x = mouseX;
-  target.y = mouseY;
-
-  // Dessine un cercle de rayon 32px à la position de la souris
-  // la couleur de remplissage est rouge car on a appelé fill(255, 0, 0) plus haut
-  // pas de contours car on a appelé noStroke() plus haut
-  circle(target.x, target.y, 32);
+  // Met à jour et dessine la cible auto-mobile
+  target.update();
+  target.edges();
+  target.show();
 
   // je déplace et dessine les véhicules
   for (let vehicle of vehicles) {
-    vehicle.applyBehaviors(target);
+    vehicle.applyBehaviors(target.pos);
     vehicle.edges();
     vehicle.update();
     vehicle.show();
 
-    if (vehicle.pos.dist(target) < 20) {
+    if (vehicle.pos.dist(target.pos) < 20) {
       // Si le véhicule est proche de la cible, on le téléporte à une position aléatoire
       vehicle.pos = createVector(random(width), random(height));
       vehicle.vel = createVector(0, 0);
