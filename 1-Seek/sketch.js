@@ -1,13 +1,23 @@
 let target
 
+function creerVehicules(nb) {
+  let vehicles = [];
+  for (let i = 0; i < nb; i++) {
+    let x = random(width);
+    let y = random(height);
+    vehicles.push(new Vehicle(x, y));
+  }
+  return vehicles;
+}
+
 
 // la fonction setup est appelée une fois au démarrage du programme par p5.js
 function setup() {
   // on crée un canvas de 800px par 800px
   createCanvas(windowWidth, windowHeight);
 
-  // On crée un véhicule à la position (100, 100)
-  vehicle = new Vehicle(100, 100);
+  // On crée 10 véhicules à des positions aléatoires dans le canvas
+  vehicles = creerVehicules(10);
 
   // TODO: créer un tableau de véhicules en global
   // ajouter nb vehicules au tableau dans une boucle
@@ -40,11 +50,11 @@ function draw() {
   // pas de contours car on a appelé noStroke() plus haut
   circle(target.x, target.y, 32);
 
-  // je déplace et dessine le véhicule
-  vehicle.applyBehaviors(target);
-  vehicle.update();
-
-  // On dessine le véhicule
-  vehicle.show();
+  // je déplace et dessine les véhicules
+  for (let i = 0; i < vehicles.length; i++) {
+    vehicles[i].applyBehaviors(target);
+    vehicles[i].update();
+    vehicles[i].show();
+  }
 
 }
