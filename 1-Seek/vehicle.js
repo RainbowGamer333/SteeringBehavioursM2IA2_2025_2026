@@ -18,7 +18,6 @@ class Vehicle {
   applyBehaviors(target) {
     let force = this.seek(target);
     this.applyForce(force);
-    this.edges();
   }
 
   // seek est un comportement qui permet de faire se rapprocher le véhicule de 
