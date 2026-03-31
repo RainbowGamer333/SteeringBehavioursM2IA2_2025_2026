@@ -1,6 +1,7 @@
 let vehicles = [];
 let imageFusee;
 let debugCheckbox;
+let nbVehicles = 20;
 
 function preload() {
   // on charge une image de fusée pour le vaisseau
@@ -10,20 +11,24 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  const nbVehicles = 20;
-  for (let i = 0; i < nbVehicles; i++) {
-    let vehicle = new Vehicle(100, 100, imageFusee);
-    vehicles.push(vehicle);
-  }
+  creerVehicules(nbVehicles);
 
   // On cree des sliders pour régler les paramètres
   creerSlidersPourProprietesVehicules();
 
   //TODO : creerSliderPourNombreDeVehicules(nbVehicles);
-  //creerSliderPourNombreDeVehicules(nbVehicles);
+  creerSliderPourNombreDeVehicules(nbVehicles);
 
   //TODO : 
   //creerSliderPourLongueurCheminDerriereVehicules(20);
+}
+
+function creerVehicules(nombre) {
+  vehicles = [];
+  for (let i = 0; i < nombre; i++) {
+    let vehicle = new Vehicle(random(width), random(height), imageFusee);
+    vehicles.push(vehicle);
+  }
 }
 
 function creerSlidersPourProprietesVehicules() {
@@ -43,9 +48,13 @@ function creerSlidersPourProprietesVehicules() {
   creerSliderPourProprieteVehicules(
     'Distance Wander:', 'distanceCercle', 10, 300, 150, 10, 10, 100);
 
+  // Slider pour régler le nombre de véhicules
+  creerSliderPourNombreDeVehicules(
+    'Nb Vehicles:', 1, 50, nbVehicles, 1, 10, 130);
+
   // Checkbox pour activer/désactiver le mode debug
   debugCheckbox = createCheckbox('Mode Debug (touche d)', false);
-  debugCheckbox.position(10, 130);
+  debugCheckbox.position(10, 160);
   debugCheckbox.style('color', 'white');
   debugCheckbox.style('font-size', '20px');
   debugCheckbox.changed(() => {
@@ -75,6 +84,30 @@ function creerSliderPourProprieteVehicules(labelText, propertyName,
     vehicles.forEach(vehicle => {
       vehicle[propertyName] = slider.value();
     });
+  });
+}
+
+function creerSliderPourNombreDeVehicules(labelText, min, max, initialValue, step, posX, posY) {
+  let slider = createSlider(min, max, initialValue, step);
+  slider.position(posX + 150, posY);
+  slider.size(180);
+
+  let label = createDiv(labelText);
+  label.position(posX, posY - 3);
+  label.style('color', 'white');
+  label.style('font-size', '20px');
+
+  let valueDisplay = createDiv(slider.value());
+  valueDisplay.position(posX + 350, posY - 3);
+  valueDisplay.style('color', 'white');
+  valueDisplay.style('font-size', '20px');
+
+  slider.input(() => {
+    valueDisplay.html(slider.value());
+    nbVehicles = slider.value();
+    // On recrée les véhicules avec le nouveau nombre
+    vehicles = [];
+    creerVehicules(nbVehicles);
   });
 }
 
