@@ -26,6 +26,12 @@ function setup() {
   // paramètres optionnels (sampleFactor = 0.1, simplifyThreshold = 0)
   points = font.textToPoints("IA2", 100, 400, 512, { sampleFactor: 0.03 });
 
+  // On générer une chaine de caractères et on va utiliser la fonction text2points
+  // pour obtenir une liste de points à partir de cette chaine de caractères
+  // Paramètres = texte, position x, position y, taille du texte,
+  // paramètres optionnels (sampleFactor = 0.1, simplifyThreshold = 0)
+  points = font.textToPoints("IA2", 100, 400, 512, { sampleFactor: 0.03 });
+
   // on cree des vehicules, autant que de points
   creerVehicules(points.length);
 
