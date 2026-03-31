@@ -11,7 +11,11 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  creerVehicules(nbVehicles);
+  const nbVehicles = 1;
+  for (let i = 0; i < nbVehicles; i++) {
+    let vehicle = new Vaisseau(100, 100, imageFusee);
+    vehicles.push(vehicle);
+  }
 
   // On cree des sliders pour régler les paramètres
   creerSlidersPourProprietesVehicules();
@@ -48,13 +52,17 @@ function creerSlidersPourProprietesVehicules() {
   creerSliderPourProprieteVehicules(
     'Distance Wander:', 'distanceCercle', 10, 300, 150, 10, 10, 100);
 
-  // Slider pour régler le nombre de véhicules
-  creerSliderPourNombreDeVehicules(
-    'Nb Vehicles:', 1, 50, nbVehicles, 1, 10, 130);
+  // Slider pour régler le poids du comportement wander
+  creerSliderPourProprieteVehicules(
+    'Poids Wander:', 'wanderWeight', 0, 5, 2, 0.1, 10, 130);
+
+  // Slider pour régler le poids du comportement arrive
+  creerSliderPourProprieteVehicules(
+    'Poids Arrive:', 'arriveWeight', 0, 5, 0.5, 0.1, 10, 160);
 
   // Checkbox pour activer/désactiver le mode debug
   debugCheckbox = createCheckbox('Mode Debug (touche d)', false);
-  debugCheckbox.position(10, 160);
+  debugCheckbox.position(10, 190);
   debugCheckbox.style('color', 'white');
   debugCheckbox.style('font-size', '20px');
   debugCheckbox.changed(() => {
@@ -118,8 +126,7 @@ function draw() {
   //background(0, 0, 0, 20);
 
   vehicles.forEach(vehicle => {
-    vehicle.wander();
-
+    vehicle.applyBehaviors(createVector(mouseX, mouseY));
     vehicle.update();
     vehicle.show();
     vehicle.edges();

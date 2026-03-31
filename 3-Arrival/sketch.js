@@ -1,34 +1,45 @@
 let target;
+let snakes = [];
 let vehicles = [];
 let points = [];
-let snake = true;
-let word = false;
-SNAKE_VEHICLE_AMOUNT = 10;
-
+let mode = "snake";
 
 // Appelée avant de démarrer l'animation
 function preload() {
   // en général on charge des images, des fontes de caractères etc.
-  font = loadFont('./assets/inconsolata.otf');
+  font = loadFont("./assets/inconsolata.otf");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  
+  // Activer le mode HSB pour les couleurs arc-en-ciel
+  colorMode(HSB, 360, 100, 100, 255);
 
   // La cible, ce sera la position de la souris
   target = createVector(random(width), random(height));
   creerVehicules(SNAKE_VEHICLE_AMOUNT);
 }
 
-function creerPoints(word) {
-  let textPoints = font.textToPoints(word, 100, 200, 256, {
-    sampleFactor: 0.1,
-    simplifyThreshold: 0
-  });
-  points = [];
-  for (let pt of textPoints) {
-    points.push(createVector(pt.x, pt.y));
-  }
+  // On générer une chaine de caractères et on va utiliser la fonction text2points
+  // pour obtenir une liste de points à partir de cette chaine de caractères
+  // Paramètres = texte, position x, position y, taille du texte,
+  // paramètres optionnels (sampleFactor = 0.1, simplifyThreshold = 0)
+  points = font.textToPoints("IA2", 100, 400, 512, { sampleFactor: 0.03 });
+
+  // on cree des vehicules, autant que de points
+  creerVehicules(points.length);
+
+  // Créer deux instances de Snake
+  const s1 = new Snake(width / 2, height / 2, 15); // Snake de 15 segments
+  const s2 = new Snake(random(width), random(height), 30); // Snake de 30 segments
+  snakes.push(s1);
+  s1.maxSpeed = 5; // Vitesse maximale plus lente pour s1
+  s1.maxForce = 0.3; // Force maximale plus faible pour s1
+  s2.maxSpeed = 8; // Vitesse maximale plus rapide pour s2
+  s2.maxForce = 0.5; // Force maximale plus élevée pour s2
+  snakes.push(s2);
+  
 }
 
 function creerVehicules(n) {
@@ -44,72 +55,57 @@ function creerVehicules(n) {
 function draw() {
   // couleur pour effacer l'écran
   background(0);
+
+  // On dessine les points
+  push();
+  stroke("white");
+  strokeWeight(2);
+  noFill();
+  points.forEach((point) => {
+    ellipse(point.x, point.y, 16);
+  });
+  pop();
+
   // pour effet psychedelique
   //background(0, 0, 0, 10);
-
 
   target.x = mouseX;
   target.y = mouseY;
 
   // dessin de la cible à la position de la souris
   push();
-  fill(255, 0, 0);
+  fill("red");
   noStroke();
   ellipse(target.x, target.y, 32);
   pop();
 
-  // dessine une ligne entre chaque véhicule adjacents
-  if (snake) {
-    stroke(255, 150);
-    strokeWeight(2);
-    noFill();
-    for (let i = 0; i < vehicles.length - 1; i++) {
-      line(vehicles[i].pos.x, vehicles[i].pos.y, vehicles[i + 1].pos.x, vehicles[i + 1].pos.y);
-    }
+  // Gestion du mode
+  if (mode === "snake") {
+    // Faire arriver la tête du snake vers la souris
+    snakes.forEach((snake) => {
+      let steeringForce = snake.arrive(target, 0);
+      snake.applyForce(steeringForce);
+      snake.update();
+      snake.show();
+    });
+  } else if (mode === "text") {
+    // Afficher les véhicules qui suivent les points
+    vehicles.forEach((vehicle, index) => {
+      // Le véhicule d'index index va sur la cible points[index]
+      let steeringForce = vehicle.arrive(new createVector(points[index].x, points[index].y), 0);
+      vehicle.applyForce(steeringForce);
+      vehicle.update();
+      vehicle.show();
+    });
   }
-
-  // si on a affaire au premier véhicule
-  // alors il suit la souris (target)
-  let steeringForce;
-  for (let i = 0; i < vehicles.length; i++) {
-    // Snake method
-    if (snake) {
-      if (i === 0) {
-        // le premier véhicule suit la souris avec arrivée
-         steeringForce = vehicles[i].arrive(target, 0);
-      } else {
-        // les autres véhicules suivent le premier véhicule avec arrivée
-        steeringForce = vehicles[i].arrive(vehicles[i - 1].pos, 0);
-      }
-    }
-    // Word method
-    else {
-      steeringForce = vehicles[i].arrive(points[i % points.length], 0);
-    }
-    
-    vehicles[i].applyForce(steeringForce);
-    vehicles[i].update();
-    vehicles[i].show();
-  }
-
-  // for (let p of points) {
-  //   stroke(255, 0, 255);
-  //   strokeWeight(4);
-  //   point(p.x, p.y);
-  // }
 }
 
 function keyPressed() {
-  if (key === 'd') {
+  if (key === "d") {
     Vehicle.debug = !Vehicle.debug;
-  }
-  else if (key === 'F1') {
-    snake = true;
-    creerVehicules(SNAKE_VEHICLE_AMOUNT);
-  }
-  else {
-    snake = false;
-    creerPoints(key);
-    creerVehicules(points.length);
+  } else if (key === "s") {
+    mode = "snake";
+  } else if (key === "t") {
+    mode = "text";
   }
 }
