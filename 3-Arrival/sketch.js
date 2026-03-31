@@ -19,7 +19,6 @@ function setup() {
   // La cible, ce sera la position de la souris
   target = createVector(random(width), random(height));
   creerVehicules(SNAKE_VEHICLE_AMOUNT);
-}
 
   // On générer une chaine de caractères et on va utiliser la fonction text2points
   // pour obtenir une liste de points à partir de cette chaine de caractères
