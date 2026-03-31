@@ -3,6 +3,7 @@ let vehicles = [];
 let points = [];
 let snake = true;
 let word = false;
+SNAKE_VEHICLE_AMOUNT = 10;
 
 
 // Appelée avant de démarrer l'animation
@@ -16,19 +17,22 @@ function setup() {
 
   // La cible, ce sera la position de la souris
   target = createVector(random(width), random(height));
-  creerVehicules(20);
+  creerVehicules(SNAKE_VEHICLE_AMOUNT);
+}
 
-  let textPoints = font.textToPoints('CUDA', 100, 200, 256, {
+function creerPoints(word) {
+  let textPoints = font.textToPoints(word, 100, 200, 256, {
     sampleFactor: 0.1,
     simplifyThreshold: 0
   });
+  points = [];
   for (let pt of textPoints) {
     points.push(createVector(pt.x, pt.y));
   }
-  creerVehicules(points.length);
 }
 
 function creerVehicules(n) {
+  vehicles = [];
   for (let i = 0; i < n; i++) {
     let v = new Vehicle(random(width), random(height));
     v.maxSpeed = 4;
@@ -78,8 +82,8 @@ function draw() {
         steeringForce = vehicles[i].arrive(vehicles[i - 1].pos, 0);
       }
     }
-    
-    else if (word) {
+    // Word method
+    else {
       steeringForce = vehicles[i].arrive(points[i % points.length], 0);
     }
     
@@ -99,12 +103,13 @@ function keyPressed() {
   if (key === 'd') {
     Vehicle.debug = !Vehicle.debug;
   }
-  else if (key === 's') {
+  else if (key === 'F1') {
     snake = true;
-    word = false; 
+    creerVehicules(SNAKE_VEHICLE_AMOUNT);
   }
-  else if (key === 'w') {
+  else {
     snake = false;
-    word = true; 
+    creerPoints(key);
+    creerVehicules(points.length);
   }
 }
