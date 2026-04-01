@@ -76,24 +76,30 @@ class Guard extends Vehicle {
             }
         }
 
-        let forward = this.vel.copy();
-        if (forward.mag() < 0.01) {
-            forward = createVector(1, 0);
-        } else {
-            forward.normalize();
-        }
+        const nextCell = (() => {
+            if (this.wanderTarget === null) {
+                let forward = this.vel.copy();
+                if (forward.mag() < 0.01) {
+                    forward = createVector(1, 0);
+                } else {
+                    forward.normalize();
+                }
 
-        // Choose the neighbor whose center direction is closest to current heading
-        candidateNeighbors.sort((a, b) => {
-            const centerA = maze.getCellCenter(a); const centerB = maze.getCellCenter(b);
-            const dirA = p5.Vector.sub(centerA, this.pos).normalize();
-            const dirB = p5.Vector.sub(centerB, this.pos).normalize();
-            const angleA = acos(constrain(forward.dot(dirA), -1, 1));
-            const angleB = acos(constrain(forward.dot(dirB), -1, 1));
-            return angleA - angleB;
-        });
+                candidateNeighbors.sort((a, b) => {
+                    const centerA = maze.getCellCenter(a);
+                    const centerB = maze.getCellCenter(b);
+                    const dirA = p5.Vector.sub(centerA, this.pos).normalize();
+                    const dirB = p5.Vector.sub(centerB, this.pos).normalize();
+                    const angleA = acos(constrain(forward.dot(dirA), -1, 1));
+                    const angleB = acos(constrain(forward.dot(dirB), -1, 1));
+                    return angleA - angleB;
+                });
+                return candidateNeighbors[0];
+            } else {
+                return random(candidateNeighbors);
+            }
+        })();
 
-        const nextCell = candidateNeighbors[0];
         if (nextCell) {
             this.prevCell = currentCell;
             return maze.getCellCenter(nextCell);
