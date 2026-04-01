@@ -3,32 +3,18 @@ class Player extends Vehicle {
     super(x, y);
     this.radius = radius;
     this.color = color(30, 220, 30);
-    this.avoidDistance = 16;
   }
 
-  applyForce(force) {
-    this.acc.add(force);
-  }
+  applyBehaviors(target, maze) {
+    this.seekForce = this.seek(target).mult(this.seekWeight);
+    this.avoidForce = this.avoidWalls(maze).mult(this.avoidWeight);
 
-  update() {
-    this.vel.add(this.acc);
-    this.vel.limit(this.maxSpeed);
-    this.pos.add(this.vel);
-    this.acc.mult(0);
-  }
-
-  applyBehaviors(maze) {
-    if (avoidForce.mag() > 0.001) {
-      this.applyForce(avoidForce.mult(1.6));
+    if (this.avoidForce.mag() > 0.001) {
+      this.applyForce(this.avoidForce);
     } else {
-      this.applyForce(seekForce);
+      this.applyForce(this.seekForce);
     }
-
-    this.pos.x = constrain(this.pos.x, this.radius / 2, width - this.radius / 2);
-    this.pos.y = constrain(this.pos.y, this.radius / 2, height - this.radius / 2);
   }
-
-  
 
   show() {
     push();

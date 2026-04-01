@@ -14,6 +14,15 @@ function setup() {
     player.maxSpeed = 2;
     player.maxForce = 1;
 
+    guards = [];
+    for (let i = 0; i < 10; i++) {
+        let randCell = maze.grid[floor(random(maze.grid.length))];
+        let guardPos = maze.getCellCenter(randCell);
+        let newGuard = new Guard(guardPos.x, guardPos.y);
+        guards.push(newGuard);
+    }
+
+
     // La cible, ce sera la position de la souris
     mouseTarget = createVector(random(width), random(height));
 }
@@ -25,19 +34,22 @@ function draw() {
     mouseTarget.x = mouseX;
     mouseTarget.y = mouseY;
 
-    // dessin de la cible à la position de la souris
+    // dessin de la souris
     push();
     fill(255, 0, 0, 175);
     noStroke();
     ellipse(mouseTarget.x, mouseTarget.y, 20);
     pop();
 
-    seekMouseForce = player.seek(mouseTarget);
-    avoidWallsForce = player.avoidWalls(maze);
-    player.applyForce(seekMouseForce);
-    player.applyForce(avoidWallsForce.mult(1.5)); // on donne plus d'importance à l'évitement des murs
+    player.applyBehaviors(mouseTarget, maze);
     player.update();
     player.show();
+
+    for (let guard of guards) {
+        guard.applyBehaviors(player, maze);
+        guard.update();
+        guard.show(maze);
+    }
 }
 
 function windowResized() {

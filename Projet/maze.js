@@ -4,7 +4,7 @@ class Cell {
     this.row = row;
     this.size = size;
     this.walls = [true, true, true, true]; // top, right, bottom, left
-    this.visited = false;
+    this.visited = false; // for maze generation
     this.start = false;
     this.end = false;
   }
@@ -140,6 +140,15 @@ class Maze {
     return createVector(cell.col * this.cellSize + this.cellSize / 2, cell.row * this.cellSize + this.cellSize / 2);
   }
 
+  isSafeCell(cell) {
+    return cell && cell.start && cell.end;
+  }
+
+  isSafeZone(pos) {
+    const cell = this.getCellAtPos(pos);
+    return this.isSafeCell(cell);
+  }
+
   isWallBetween(a, b) {
     if (!a || !b) return true;
     if (a.col === b.col && a.row === b.row) return false;
@@ -148,6 +157,54 @@ class Maze {
     if (b.row === a.row + 1 && b.col === a.col) return a.walls[2];
     if (b.row === a.row - 1 && b.col === a.col) return a.walls[0];
     return true;
+  }
+
+  getOpenNeighbors(cell) {
+    if (!cell) return [];
+    const neighbors = [];
+    const top = this.grid[this.index(cell.col, cell.row - 1)];
+    const right = this.grid[this.index(cell.col + 1, cell.row)];
+    const bottom = this.grid[this.index(cell.col, cell.row + 1)];
+    const left = this.grid[this.index(cell.col - 1, cell.row)];
+
+    if (top && !cell.walls[0]) neighbors.push(top);
+    if (right && !cell.walls[1]) neighbors.push(right);
+    if (bottom && !cell.walls[2]) neighbors.push(bottom);
+    if (left && !cell.walls[3]) neighbors.push(left);
+
+    return neighbors;
+  }
+
+  getWallSegments() {
+    const segments = [];
+    for (const cell of this.grid) {
+      const x = cell.col * this.cellSize;
+      const y = cell.row * this.cellSize;
+
+      if (cell.walls[0]) segments.push({p1: createVector(x, y), p2: createVector(x + this.cellSize, y)}); // top
+      if (cell.walls[1]) segments.push({p1: createVector(x + this.cellSize, y), p2: createVector(x + this.cellSize, y + this.cellSize)}); // right
+      if (cell.walls[2]) segments.push({p1: createVector(x + this.cellSize, y + this.cellSize), p2: createVector(x, y + this.cellSize)}); // bottom
+      if (cell.walls[3]) segments.push({p1: createVector(x, y + this.cellSize), p2: createVector(x, y)}); // left
+    }
+    return segments;
+  }
+
+  lineIntersectsWall(a, b) {
+    const walls = this.getWallSegments();
+    for (const w of walls) {
+      if (this._lineIntersect(a, b, w.p1, w.p2)) return true;
+    }
+    return false;
+  }
+
+  _lineIntersect(p1, p2, p3, p4) {
+    const denom = (p4.y - p3.y) * (p2.x - p1.x) - (p4.x - p3.x) * (p2.y - p1.y);
+    if (abs(denom) < 1e-6) return false;
+
+    const ua = ((p4.x - p3.x) * (p1.y - p3.y) - (p4.y - p3.y) * (p1.x - p3.x)) / denom;
+    const ub = ((p2.x - p1.x) * (p1.y - p3.y) - (p2.y - p1.y) * (p1.x - p3.x)) / denom;
+
+    return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
   }
 
   show() {
