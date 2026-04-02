@@ -58,8 +58,8 @@ function draw() {
   background("black");
 
   // Récupère les valeurs des sliders et les applique aux véhicules
-  let maxSpeed = maxSpeedSlider.value();
-  let maxForce = maxForceSlider.value();
+  let maxSpeed = vitesseMaxSlider.value();
+  let maxForce = forceMaxSlider.value();
   for (let vehicle of vehicles) {
     vehicle.maxSpeed = maxSpeed;
     vehicle.maxForce = maxForce;
