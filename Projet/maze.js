@@ -128,8 +128,8 @@ class Maze {
   }
 
   getCellAtPos(pos) {
-    const col = floor(constrain(pos.x / this.cellSize, 0, this.cols - 1));
-    const row = floor(constrain(pos.y / this.cellSize, 0, this.rows - 1));
+    const col = floor(pos.x / this.cellSize, 0, this.cols - 1);
+    const row = floor(pos.y / this.cellSize, 0, this.rows - 1);
     const idx = this.index(col, row);
     if (idx < 0) return null;
     return this.grid[idx];
@@ -141,7 +141,7 @@ class Maze {
   }
 
   isSafeCell(cell) {
-    return cell && cell.start && cell.end;
+    return cell && (cell.start || cell.end);
   }
 
   isSafeZone(pos) {

@@ -29,26 +29,28 @@ class BehaviourManager {
     avoidWalls(maze) {
         if (!maze) return createVector(0, 0);
 
-        const currentCell = maze.getCellAtPos(this.pos);
-        if (!currentCell) return createVector(0, 0);
+        const nextCell = maze.getCellAtPos(this.pos);
+        if (!nextCell) return createVector(0, 0);
 
-        const ahead = this.pos.copy().add(this.vel.copy().setMag(this.maxSpeed * 2));
-        const aheadCell = maze.getCellAtPos(ahead);
+        // Determine the cell the vehicle would occupy after the next movement step
+        const currentPos = this.pos.copy().add(this.vel.copy().setMag(this.maxSpeed*2));
+        const currentCell = maze.getCellAtPos(currentPos);
 
-        if (!aheadCell || aheadCell === currentCell) {
+        if (currentCell === nextCell) {
             return createVector(0, 0);
         }
 
-        const collision = maze.isWallBetween(currentCell, aheadCell);
+        const collision = maze.isWallBetween(currentCell, nextCell);
         if (!collision) {
             return createVector(0, 0);
         }
 
-        let avoid = this.pos.copy().sub(ahead).setMag(this.maxForce * 2);
+        // Push away from the wall direction using the current velocity vector
+        let avoid = this.pos.copy().sub(currentPos).setMag(this.maxForce * 2);
         if (avoid.mag() < 0.001) {
             avoid = createVector(-this.vel.y, this.vel.x).setMag(this.maxForce / 2);
         }
-        
+
         return avoid;
     }
 
