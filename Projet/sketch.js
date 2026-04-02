@@ -1,8 +1,8 @@
-const NB_COLS = 5;
-const NB_ROWS = 5;
+const NB_COLS = 20;
+const NB_ROWS = 15;
 const CELL_SIZE = 40;
 
-const NB_GUARDS = 0;
+const NB_GUARDS = 10;
 
 let maze;
 let player;
@@ -211,5 +211,9 @@ function triggerVictory() {
     gameOverOverlay.hide();
 }
 
-
-
+function keyPressed() {
+    if (key === 'd' || key === 'D') {
+        Vehicle.debug = !Vehicle.debug;
+        console.log(`Debug mode: ${Vehicle.debug}`);
+    }
+}

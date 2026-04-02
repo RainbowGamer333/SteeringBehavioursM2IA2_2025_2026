@@ -23,6 +23,13 @@ class BehaviourManager {
         // et on limite cette force à la longueur maxForce
         force.limit(this.maxForce);
 
+        if (Vehicle.debug) {
+            drawingContext.setLineDash([3, 5]);
+            stroke(255, 255, 0, 255);
+            line(this.pos.x, this.pos.y, target.x, target.y);
+            drawingContext.setLineDash([]);
+        }
+
         return force;
     }
 
@@ -69,6 +76,10 @@ class BehaviourManager {
         }
 
         if (this.wanderTarget) {
+            if (Vehicle.debug) {
+                fill(255, 0, 255, 255);
+                circle(this.wanderTarget.x, this.wanderTarget.y, 8);
+            }
             return this.seek(this.wanderTarget);
         }
     }
