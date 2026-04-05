@@ -1,5 +1,5 @@
 class Vehicle extends BehaviourManager {
-  static debug = true;
+  static debug = false;
   constructor(x, y) {
     super();
     this.pos = createVector(x, y);
