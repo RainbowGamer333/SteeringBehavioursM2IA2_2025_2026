@@ -5,7 +5,7 @@ Projet deployé : https://rainbowgamer333.github.io/SteeringBehavioursM2IA2_2025
 <br>
 IDE : Visual Studio Code
 <br>
-
+Mode debug : Appuyez sur "d"
 
 
 ##  Dungeon Escape
