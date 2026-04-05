@@ -3,6 +3,8 @@ La totalité du README.md a été écrit personnellement. En revanche je vais pe
 <br><br>
 Projet deployé : https://rainbowgamer333.github.io/SteeringBehavioursM2IA2_2025_2026/
 <br>
+Vidéo : https://www.youtube.com/watch?v=OjMftsksWsY
+<br><br>
 IDE : Visual Studio Code
 <br>
 Mode debug : Appuyez sur "d"
